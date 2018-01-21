@@ -17,7 +17,8 @@ Feature: ServiceRegistry
       | test2   | 0.0.2   | http://192.168.1.6 | created |
 
   Scenario Outline: Find service:
-    When I search for a service "<service>" with version "<version>"
+    When sample services are given
+    And I search for a service "<service>" with version "<version>"
     Then I should find count "<count>" instances of service
     And the service "<service>" should have the correct type
     And the service "<service>" should have the correct version "<version>"
@@ -28,7 +29,8 @@ Feature: ServiceRegistry
       | test2   | 0.0.2   |   2   |
 
   Scenario Outline: Finding non existing service:
-    When I search for a service "<service>" with version "<version>"
+    When sample services are given
+    And I search for a service "<service>" with version "<version>"
     Then I should find count "<count>" services
     Examples:
       | service | version | count |
@@ -37,7 +39,8 @@ Feature: ServiceRegistry
 
 
   Scenario Outline: Finding service without version:
-    When I search for a service "<service>" without version
+    When sample services are given
+    And I search for a service "<service>" without version
     Then I should find count "<count>" services
     And the service "<service>" should have the correct type
     Examples:
