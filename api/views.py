@@ -44,6 +44,8 @@ class ServiceViewSet(viewsets.ViewSet):
 
         return Response(serializer.data)
 
+    # FIXME: we need to ensure integrity here as well, perhaps move the
+    # uniqueness constraint on models definition?
     def update(self, request, name, version, pk):
         """Update the service URL.
 
