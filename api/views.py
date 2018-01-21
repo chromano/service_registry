@@ -38,9 +38,9 @@ class ServiceViewSet(viewsets.ViewSet):
 
         return Response(serializer.data)
 
-    def update(self, request, name, version, id):
+    def update(self, request, name, version, pk):
         try:
-            service = Service.objects.get(id=id)
+            service = Service.objects.get(id=pk)
 
             url = request.data.get('url')
             serializer = ServiceSerializer(instance=service,
@@ -59,9 +59,9 @@ class ServiceViewSet(viewsets.ViewSet):
         except Service.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-    def delete(self, request, service, version, id):
+    def delete(self, request, name, version, pk):
         try:
-            service = Service.objects.get(id=id)
+            service = Service.objects.get(id=pk)
 
             signals.service_deleted.send(
                 sender=Service, id=service.id, name=service.name,
