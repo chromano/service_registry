@@ -5,17 +5,16 @@ Feature: ServiceRegistry
     Given there is an empty ServiceRegistry
 
   Scenario Outline: Add service
-    When I add a service "<service>" with version "<version>"
+    When I add a service "<service>" with version "<version>" and url "<url>"
     Then I should be notified with a change "<change>"
     Examples:
-      | service | version | change  |
-      | test    | 0.0.1   | created |
-      | test    | 0.0.1   | created |
-      | test    | 0.0.2   | created |
-      | test    | 0.0.2   | created |
-      | test2   | 0.0.2   | created |
-      | test2   | 0.0.2   | created |
-
+      | service | version | url                | change  |
+      | test    | 0.0.1   | http://192.168.1.1 | created |
+      | test    | 0.0.1   | http://192.168.1.2 | created |
+      | test    | 0.0.2   | http://192.168.1.3 | created |
+      | test    | 0.0.2   | http://192.168.1.4 | created |
+      | test2   | 0.0.2   | http://192.168.1.5 | created |
+      | test2   | 0.0.2   | http://192.168.1.6 | created |
 
   Scenario Outline: Find service:
     When I search for a service "<service>" with version "<version>"
