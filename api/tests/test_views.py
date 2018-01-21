@@ -36,12 +36,12 @@ def test_create_duplicated_service():
 
     with mock.patch('api.signals.service_created') as p_signal:
         response = view.create(request, 'serviceA', '0.0.1')
-        assert response.status_code == 409
+        assert response.status_code == 400
 
         p_signal.send.assert_not_called()
 
     assert Service.objects.all().count() == 1
-    assert response.data['id'] == service.id
+    assert 'non_field_errors' in response.data
 
 
 @pytest.mark.django_db
@@ -120,6 +120,28 @@ def test_update_service():
         p_signal.send.assert_called_with(
             sender=Service, id=service.id, name='serviceA', version='0.0.1',
             url='http://192.168.1.2')
+
+
+@pytest.mark.django_db
+def test_update_service_uniqueness_contraint():
+    view = ServiceViewSet()
+
+    Service(name='serviceA', version='0.0.1', url='http://192.168.1.2').save()
+
+    service = Service(name='serviceA', version='0.0.1',
+                      url='http://192.168.1.1')
+    service.save()
+
+    request = mock.Mock()
+    request.data = {'url': 'http://192.168.1.2'}
+
+    with mock.patch('api.signals.service_updated') as p_signal:
+        response = view.update(request, 'serviceA', '0.0.1', service.id)
+        assert response.status_code == 400
+
+        p_signal.send.assert_not_called()
+
+    assert 'non_field_errors' in response.data
 
 
 @pytest.mark.django_db

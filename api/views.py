@@ -8,30 +8,25 @@ from api.serializers import ServiceSerializer
 
 class ServiceViewSet(viewsets.ViewSet):
     def create(self, request, name, version):
-        """Create a service ensuring no conflicts.
+        """Create a service.
 
         The signal "service_created" is emitted upon successful creation.
         """
-        qs = Service.objects.filter(
-            name=name, version=version, url=request.data.get('url'))
-        if not qs.exists():
-            url = request.data.get('url')
-            serializer = ServiceSerializer(
-                data={'name': name, 'version': version, 'url': url})
-            if serializer.is_valid():
-                service = serializer.save()
+        url = request.data.get('url')
+        serializer = ServiceSerializer(
+            data={'name': name, 'version': version, 'url': url})
+        if serializer.is_valid():
+            service = serializer.save()
 
-                signals.service_created.send(
-                    sender=Service, id=service.id, name=service.name,
-                    version=service.version, url=service.url)
-
-                return Response(
-                    {'id': service.id}, status=status.HTTP_201_CREATED)
+            signals.service_created.send(
+                sender=Service, id=service.id, name=service.name,
+                version=service.version, url=service.url)
 
             return Response(
-                serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                {'id': service.id}, status=status.HTTP_201_CREATED)
 
-        return Response({'id': qs.first().id}, status=status.HTTP_409_CONFLICT)
+        return Response(
+            serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def list(self, request, name, version=None):
         """List services given the name and optionally the version.
@@ -44,8 +39,6 @@ class ServiceViewSet(viewsets.ViewSet):
 
         return Response(serializer.data)
 
-    # FIXME: we need to ensure integrity here as well, perhaps move the
-    # uniqueness constraint on models definition?
     def update(self, request, name, version, pk):
         """Update the service URL.
 
