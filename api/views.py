@@ -29,8 +29,11 @@ class ServiceViewSet(viewsets.ViewSet):
 
         return Response({'id': qs.first().id}, status=status.HTTP_409_CONFLICT)
 
-    def retrieve(self, request, name, version):
-        services = Service.objects.filter(name=name, version=version)
+    def list(self, request, name, version=None):
+        services = Service.objects.filter(name=name)
+        if version is not None:
+            services = services.filter(version=version)
+
         serializer = ServiceSerializer(services, many=True)
 
         return Response(serializer.data)

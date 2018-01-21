@@ -61,19 +61,19 @@ def test_create_service_missing_data():
 
 
 @pytest.mark.django_db
-def test_retrieve_service():
+def test_list_service_by_name_and_version():
     view = ServiceViewSet()
 
     request = mock.Mock()
 
-    response = view.retrieve(request, 'serviceA', '0.0.1')
+    response = view.list(request, 'serviceA', '0.0.1')
     assert response.data == []
 
     service = Service(name='serviceA', version='0.0.1',
                       url='http://192.168.1.1')
     service.save()
 
-    response = view.retrieve(request, 'serviceA', '0.0.1')
+    response = view.list(request, 'serviceA', '0.0.1')
     assert response.data == [
         {
             'id': service.id,
@@ -85,14 +85,21 @@ def test_retrieve_service():
 
 
 @pytest.mark.django_db
-def test_retrieve_service_not_found():
+def test_list_service_by_name():
     view = ServiceViewSet()
 
     request = mock.Mock()
 
-    response = view.retrieve(request, 'serviceA', '0.0.1')
+    response = view.list(request, 'serviceA')
     assert response.status_code == 200
-    assert response.data == []
+    assert len(response.data) == 0
+
+    Service(name='serviceA', version='0.0.1', url='http://192.168.1.1').save()
+    Service(name='serviceA', version='0.0.2', url='http://192.168.1.1').save()
+
+    response = view.list(request, 'serviceA')
+    assert response.status_code == 200
+    assert len(response.data) == 2
 
 
 @pytest.mark.django_db
