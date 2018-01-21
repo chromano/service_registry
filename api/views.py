@@ -8,6 +8,10 @@ from api.serializers import ServiceSerializer
 
 class ServiceViewSet(viewsets.ViewSet):
     def create(self, request, name, version):
+        """Create a service ensuring no conflicts.
+
+        The signal "service_created" is emitted upon successful creation.
+        """
         qs = Service.objects.filter(
             name=name, version=version, url=request.data.get('url'))
         if not qs.exists():
@@ -30,6 +34,8 @@ class ServiceViewSet(viewsets.ViewSet):
         return Response({'id': qs.first().id}, status=status.HTTP_409_CONFLICT)
 
     def list(self, request, name, version=None):
+        """List services given the name and optionally the version.
+        """
         services = Service.objects.filter(name=name)
         if version is not None:
             services = services.filter(version=version)
@@ -39,6 +45,10 @@ class ServiceViewSet(viewsets.ViewSet):
         return Response(serializer.data)
 
     def update(self, request, name, version, pk):
+        """Update the service URL.
+
+        Upon successful update, emits the "service_updated" signal.
+        """
         try:
             service = Service.objects.get(id=pk)
 
@@ -60,6 +70,11 @@ class ServiceViewSet(viewsets.ViewSet):
             return Response(status=status.HTTP_404_NOT_FOUND)
 
     def delete(self, request, name, version, pk):
+        """Deletes an existing service.
+
+        If the services does exist and was deleted successfully, emits
+        the "service_deleted" signal.
+        """
         try:
             service = Service.objects.get(id=pk)
 
