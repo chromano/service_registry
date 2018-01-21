@@ -13,38 +13,32 @@ and decisions you make should be reflected in feature files with corresponding
 steps implementation for [Behave](http://pythonhosted.org/behave/). In short if
 it is not in feature files, it doesn't exist and has no right to exist in code.
 
-## Your task
-It's fairly simple - you have to write the whole thing. Nah, not really, as 
-while it would be impressive - it is a rather massive task for months to write
-a beast like this right. Instead I want you to try and write a part of it.
+## Running
+This project was implemented using Python 3.6.1. For running it, ensure a
+virtualenv with Python 3.6+ and install the requirements:
 
-Which part it will be is entirely up to you. You can focus on the API part of
-things and write beautiful rest-full automation for all the services, design
-API for registration and then searching/retrieving, checking health etc. This
-would mostly demonstrate your knowledge of architecture, designing, planning
-and documenting.
+    $ pip install -r requirements.txt
 
-Or you could instead write a solid backend that not only is easy to expand but
-also to scale, either from scratch or on top of some existing solution (Celery
-is a good example) in which case I would expect installation automation to go
-along with it. Doesn't have to be pretty, shell-ridden vagrant would be plenty.
-This certainly will highlight your developer aspects, knowledge of common 
-problems that come with vertical and horizontal scaling etc.
+Then set up the database (the default is a sqlite3 database):
 
-Or anything else you can potentially imagine. I do not expect you to deliver
-anything that will be finished as that would take days and I want you to spend
-no more than 2-4 hours on this. What I want to shine through is how do you
-approach this sort of a project, where do you begin and how is your work process
-like. For this reasons I would like you to commit as often as you can, with 
-good, clean commit messages and to provide a note explaining what you've done,
-what are your plans for the future (if you were to keep working on it) and
-possible problems that are yet to be conquered, preferably with potential 
-solutions. If there are bug you've left behind because they would take too much 
-time to fix, putting them there will score you big points. 
+    $ python manage.py migrate
 
-## Summary
+Finally, run the server:
 
-In summary have fun and trust me when I say it - being honest and true with
-everything, from what you know and what you do not know is most important part
-of doing good on this task. When you are done please open a pull request to
-this repo with your solution.
+    $ python manage.py runserver
+
+The API is now available at http://localhost:8000
+
+## Tests
+This project contains behavior and unit tests implemented. To run the unit
+tests, ensure you install the test requirements:
+
+    $ pip install -r requirements-test.txt
+
+Then, for the unit tests:
+
+    $ pytest api --cov api --cov-report term-missing
+
+And for behavior tests:
+
+    $ python manage.py behave
